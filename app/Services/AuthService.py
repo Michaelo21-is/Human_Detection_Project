@@ -12,10 +12,10 @@ class AuthService:
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
         new_user = User(
-            name=user_data.name,
+            name=user_data.firstName,
             email=user_data.email,
             password=user_data.password,
-            last_name=user_data.last_name,
+            last_name=user_data.lastName,
             session_id=str(uuid.uuid4())
         )
         db.add(new_user)
