@@ -6,3 +6,6 @@ class UserRegisterSchema(BaseModel):
     lastName: str
     email: EmailStr
     password: str
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
