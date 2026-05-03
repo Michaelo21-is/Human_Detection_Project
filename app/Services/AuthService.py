@@ -1,9 +1,9 @@
 import uuid
 
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from app.core.password_encoder import encode_password, verify_password
 from app.Models.UsersModel import User
+from sqlalchemy.orm import Session
 from app.Schema.AuthSchema import UserRegisterSchema, UserLoginSchema
 class AuthService:
     @staticmethod
@@ -22,6 +22,7 @@ class AuthService:
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+        db.close()
         return new_user.session_id
     @staticmethod
     def login_user(user_data: UserLoginSchema, db: Session):
