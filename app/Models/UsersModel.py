@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.database import Base
 
@@ -11,3 +12,8 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     session_id = Column(String, nullable=False)
+    user = relationship(
+        "User",
+        back_populates="recognized_people_mappings"
+    )
+
