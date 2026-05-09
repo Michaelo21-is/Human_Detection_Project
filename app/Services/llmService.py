@@ -91,6 +91,19 @@ class llmService:
         if len(face) > 1:
             return "צריך שתעלה תמונה של פרצוף אחד לא יותר כדי שהזיהוי יהיה טוב יותר"
         face = face[0]
+        friendFace = (
+            db.query(RecognizedPeople)
+            .join(
+                UsersRecognizedPeopleMapper,
+                UsersRecognizedPeopleMapper.recognized_people_id == RecognizedPeople.id
+            )
+            .filter(UsersRecognizedPeopleMapper.user_id == user.id)
+            .all()
+        )
+        for friend in friendFace:
+            distance = llmService.cosine_distance(face["embedding"], friend.face_embedding)
+            if distance < 0.4:
+                return "פרצוף זה מוכר במערכת אין צורך בלהוסיף אותו שוב"
         recognizedPeople = RecognizedPeople(
             name=data.name,
             where_is_known_from=data.where_is_known_from,
