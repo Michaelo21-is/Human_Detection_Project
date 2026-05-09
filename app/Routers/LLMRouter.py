@@ -11,7 +11,7 @@ router = APIRouter(
 )
 @router.websocket("/check-face")
 async def check_face(web_socket: WebSocket, db: Session = Depends(get_db)):
-    await llmService.find_person(webSocket, db)
+    await llmService.find_person(web_socket, db)
 def save_person(data: SetUpRecognizePeopleSchema, db: Session = Depends(get_db), session_id: str = Header(...), face: UploadFile = File(...)):
     return llmService.save_person(data, db, session_id, face)
 
