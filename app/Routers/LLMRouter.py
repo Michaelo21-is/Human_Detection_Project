@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile, Header
+from fastapi import APIRouter, Depends, File, UploadFile, Header, WebSocket
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.Services.llmService import llmService
@@ -9,9 +9,9 @@ router = APIRouter(
     prefix="/api/llm",
     tags=["Llm"]
 )
-@router.post("/check-face")
-def check_face(db: Session = Depends(get_db) ,face: UploadFile= File(...), session_id: str = Header(...)):
-    return llmService.find_person(face, db, session_id)
+@router.websocket("/check-face")
+async def check_face(web_socket: WebSocket, db: Session = Depends(get_db)):
+    await llmService.find_person(webSocket, db)
 def save_person(data: SetUpRecognizePeopleSchema, db: Session = Depends(get_db), session_id: str = Header(...), face: UploadFile = File(...)):
     return llmService.save_person(data, db, session_id, face)
 

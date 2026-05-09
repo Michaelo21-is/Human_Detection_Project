@@ -1,16 +1,13 @@
-from deepface.modules import recognition
-from fastapi import WebSocket, WebSocketDisconnect, HTTPException, status
+from fastapi import WebSocket, WebSocketDisconnect
 import speech_recognition as sr
-import tempfile
 import webrtcvad
-from tensorflow.python.util.deprecation import silence
 
 
 class VoiceService:
     @staticmethod
     async def recognize_voice(websocket: WebSocket):
         await websocket.accept()
-        vad = webrtcvad.Vad(3)
+        vad = webrtcvad.Vad(2)
         audio_buffer = bytearray()
         sampleRate = 16000
         text = ""
