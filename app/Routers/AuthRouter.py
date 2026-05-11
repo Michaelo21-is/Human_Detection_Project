@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -16,12 +16,16 @@ router = APIRouter(
 @router.post("/register")
 def register_user(
     user_data: UserRegisterSchema,
+    response: Response,
     db: Session = Depends(get_db)
 ):
-    return AuthService.register_user(user_data, db)
+    session_id = AuthService.register_user(user_data, db)
+    response.set_cookie(key="session_id", value=session_id)
 @router.post("/login")
 def login_user(
         user_data: UserLoginSchema,
+        response: Response,
         db: Session = Depends(get_db)
 ):
-    return AuthService.login_user(user_data, db)
+    session_id = AuthService.login_user(user_data, db)
+    response.set_cookie(key="session_id", value=session_id)

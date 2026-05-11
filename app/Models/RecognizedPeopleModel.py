@@ -13,3 +13,7 @@ class RecognizedPeople(Base):
     where_is_known_from = Column(String, nullable=False)
     face_embedding = Column(ARRAY(Float), nullable=False)
 
+    user_mappings = relationship(
+        "UsersRecognizedPeopleMapper",
+        back_populates="recognized_people"
+    )
