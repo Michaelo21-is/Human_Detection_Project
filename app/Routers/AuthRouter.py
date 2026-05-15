@@ -20,7 +20,8 @@ def register_user(
     db: Session = Depends(get_db)
 ):
     session_id = AuthService.register_user(user_data, db)
-    response.set_cookie(key="session_id", value=session_id)
+    response.set_cookie(key="session_id", value=session_id, httponly=True, secure=False, samesite="lax")
+    return {"message": "registered successfully"}
 @router.post("/login")
 def login_user(
         user_data: UserLoginSchema,
@@ -28,4 +29,4 @@ def login_user(
         db: Session = Depends(get_db)
 ):
     session_id = AuthService.login_user(user_data, db)
-    response.set_cookie(key="session_id", value=session_id)
+    response.set_cookie(key="session_id", value=session_id, httponly=True, secure=False, samesite="lax")
