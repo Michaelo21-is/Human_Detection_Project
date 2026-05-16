@@ -27,7 +27,7 @@ class llmService:
     async def find_person(web_socket: WebSocket, db: Session):
         await web_socket.accept()
 
-        session_id = web_socket.headers.get("session_id")
+        session_id = web_socket.query_params.get("session_id")
 
         if not session_id:
             await web_socket.send_json({
