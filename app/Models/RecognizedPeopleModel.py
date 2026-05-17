@@ -17,3 +17,8 @@ class RecognizedPeople(Base):
         "UsersRecognizedPeopleMapper",
         back_populates="recognized_people"
     )
+    person_timeout = relationship(
+        "PersonTimeout",
+        back_populates="recognized_person",
+        uselist=False
+    )

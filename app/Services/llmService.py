@@ -7,11 +7,13 @@ from fastapi import File, HTTPException, status, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from deepface import DeepFace
 import asyncio
+from datetime import datetime, timezone, timedelta
 
 from app.Models.UsersModel import User
 from app.Models.RecognizedPeopleModel import  RecognizedPeople
 from app.Models.UsersRecognizedPeopleMapping import UsersRecognizedPeopleMapper
 from app.Schema.SetUpRecognizePeopleSchema import SetUpRecognizePeopleSchema
+from app.Models.PersonTimeoutModel import PersonTimeout
 
 class llmService:
     @staticmethod
@@ -98,7 +100,7 @@ class llmService:
                     "name": [],
                     "whereIsKnownFrom": [],
                 }
-
+                personId = 0
                 for person in recognizedPeople:
                     for embedding in embeddings:
                         distance = llmService.cosine_distance(
@@ -109,12 +111,25 @@ class llmService:
                         if distance < 0.4:
                             personInfo["name"].append(person.name)
                             personInfo["whereIsKnownFrom"].append(person.where_is_known_from)
+                            personId = person.id
                             break
-
-                await web_socket.send_json({
-                    "success": True,
-                    "data": personInfo
-                })
+                if not personInfo["name"]:
+                    await web_socket.send_json({
+                        "success": False,
+                        "message": "No recognized people found"
+                    })
+                else:
+                    if not llmService.can_speak_about_person(db, personId):
+                        await web_socket.send_json({
+                            "success": False,
+                            "message": "this person currently in timeout"
+                        })
+                        continue
+                        # to skip the success message
+                    await web_socket.send_json({
+                        "success": True,
+                        "data": personInfo
+                    })
 
         except WebSocketDisconnect:
             return
@@ -158,9 +173,33 @@ class llmService:
 
         userRecognizedPeople = UsersRecognizedPeopleMapper(user_id=user.id, recognized_people_id=recognizedPeople.id)
         db.add(userRecognizedPeople)
-
+        db.commit()
         db.refresh(userRecognizedPeople)
-        db.close()
         return "השמירה צלחה"
 
+    @staticmethod
+    def can_speak_about_person(db: Session, person_id: int) -> bool:
+        timeout_minutes = 10
+        now = datetime.now(timezone.utc)
 
+        person_timeout = (
+            db.query(PersonTimeout)
+            .filter(PersonTimeout.recognized_person_id == person_id)
+            .first()
+        )
+
+        if person_timeout is None:
+            person_timeout = PersonTimeout(
+                recognized_person_id=person_id
+            )
+            db.add(person_timeout)
+            db.commit()
+            return True
+
+        if now - person_timeout.last_spoken_at >= timedelta(minutes=timeout_minutes):
+            # if they are talk before is just gonna update the time they spoke
+            person_timeout.last_spoken_at = now
+            db.commit()
+            return True
+
+        return False

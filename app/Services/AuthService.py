@@ -22,7 +22,6 @@ class AuthService:
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        db.close()
         return new_user.session_id
     @staticmethod
     def login_user(user_data: UserLoginSchema, db: Session):
