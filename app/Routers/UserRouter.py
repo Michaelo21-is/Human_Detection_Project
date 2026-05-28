@@ -9,4 +9,13 @@ router = APIRouter(
 @router.get("/is-user-logged-in")
 def get_user(db: Session = Depends(get_db), request: Request = Request):
     session_id = request.cookies.get("session_id")
-    return UserService.check_if_user_logged_in(db, session_id)
+    voice_id = UserService.check_if_user_logged_in(db, session_id)
+    return voice_id
+@router.post("/set-voice-preference")
+async def set_voice_preference( request: Request, db: Session = Depends(get_db)):
+
+    session_id = request.cookies.get("session_id")
+    data = await request.json()
+    voice_id = data["voice_id"]
+
+    return UserService.set_voice_preference(db, session_id, voice_id)
