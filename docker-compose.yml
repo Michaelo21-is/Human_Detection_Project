@@ -3,13 +3,30 @@ services:
     image: postgres:16
     container_name: Human_Detection-postgres
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-Human_Detection}
+      POSTGRES_USER: ${POSTGRES_USER:-Human_Detection}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Human_Detection69}
     ports:
       - "5433:5432"
     volumes:
       - Human_Detection_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: Human_Detection-api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-Human_Detection}:${POSTGRES_PASSWORD:-Human_Detection69}@db:5432/${POSTGRES_DB:-Human_Detection}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   Human_Detection_pg:

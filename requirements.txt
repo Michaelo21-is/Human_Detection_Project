@@ -1,0 +1,23 @@
+# Web API
+fastapi==0.136.1
+uvicorn[standard]==0.46.0
+python-multipart==0.0.27
+
+# Database (PostgreSQL + SQLAlchemy)
+SQLAlchemy==1.4.0
+psycopg2-binary==2.9.12
+
+# Auth & schemas
+passlib==1.7.4
+bcrypt==4.0.1
+pydantic==2.13.3
+email-validator==2.3.0
+
+# Face recognition (llmService)
+opencv-python==4.13.0.92
+numpy==2.4.4
+deepface==0.0.99
+
+# Voice (VoiceService)
+SpeechRecognition==3.16.1
+webrtcvad==2.0.10
