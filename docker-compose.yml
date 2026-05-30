@@ -29,15 +29,17 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx:1.27-alpine
-    container_name: Human_Detection-nginx
+    image: nginx:latest
+    container_name: human-detection-nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     depends_on:
       - api
-    restart: unless-stopped
 
 volumes:
   Human_Detection_pg:
