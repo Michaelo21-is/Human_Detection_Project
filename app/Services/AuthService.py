@@ -5,6 +5,7 @@ from app.core.password_encoder import encode_password, verify_password
 from app.Models.UsersModel import User
 from sqlalchemy.orm import Session
 from app.Schema.AuthSchema import UserRegisterSchema, UserLoginSchema
+DEFAULT_VOICE_ID = "2V7k6GOisfFlHlBdz8ec"
 class AuthService:
     @staticmethod
     def register_user(user_data: UserRegisterSchema, db: Session):
@@ -17,6 +18,7 @@ class AuthService:
             email=user_data.email,
             password=encoded_password,
             last_name=user_data.lastName,
+            voice_preference=DEFAULT_VOICE_ID,
             session_id=str(uuid.uuid4())
         )
         db.add(new_user)
