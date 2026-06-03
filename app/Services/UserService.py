@@ -22,3 +22,22 @@ class UserService:
 
         db.commit()
         return "user update successfully voice preference"
+
+    def get_user_contact_list(db: Session, session_id: str):
+        user = db.query(User).filter(User.session_id == session_id).first()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+
+        contacts = []
+
+        for mapping in user.recognized_people_mappings:
+            person = mapping.recognized_people
+
+            contacts.append({
+                "id": person.id,
+                "name": person.name,
+                "where_is_known_from": person.where_is_known_from
+            })
+
+        return contacts

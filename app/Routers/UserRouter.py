@@ -19,3 +19,8 @@ async def set_voice_preference( request: Request, db: Session = Depends(get_db))
     voice_id = data["voice_id"]
 
     return UserService.set_voice_preference(db, session_id, voice_id)
+@router.get("/get-user-contact-list")
+async def get_user_contact_list(request: Request, db: Session = Depends(get_db)):
+
+    session_id = request.cookies.get("session_id")
+    return UserService.get_user_contact_list(db, session_id)
