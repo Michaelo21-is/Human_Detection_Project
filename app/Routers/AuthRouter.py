@@ -27,7 +27,7 @@ def register_user(
         httponly=True,
         secure=SECURE,
         samesite="none",
-        path="/",
+        domain=".michael-site.com",
         max_age=60 * 60 * 24 * 7,
     )
     return {"message": "registered successfully"}
@@ -44,6 +44,6 @@ def login_user(
         httponly=True,
         secure=SECURE,
         samesite="none",
-        path="/",
+        domain=".michael-site.com",
         max_age=60 * 60 * 24 * 7,
     )

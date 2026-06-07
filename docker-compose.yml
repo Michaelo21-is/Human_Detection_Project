@@ -21,6 +21,8 @@ services:
     container_name: Human_Detection-api
     expose:
       - "8000"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-Human_Detection}:${POSTGRES_PASSWORD:-Human_Detection69}@db:5432/${POSTGRES_DB:-Human_Detection}
     depends_on:
